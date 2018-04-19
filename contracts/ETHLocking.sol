@@ -20,7 +20,7 @@ contract ETHLocking {
     mapping (address => mapping (address => uint)) allowed;
     mapping(bytes32 => bool) rewarded;
     PeaceRelay public ETHRelay;
-    address public ETCTokenAddr;
+    address public ETHTokenAddr;
     
     modifier onlyOwner() {
         if (owner == msg.sender) {
@@ -42,13 +42,13 @@ contract ETHLocking {
         uint value;
     }
     
-    event Locked(address indexed from, address indexed etcAddr, uint value);
+    event Locked(address indexed from, address indexed ethAddr, uint value);
     event Unlocked(address indexed to, uint value);
     
-    function ETCLocking(address _peaceRelayAddr, address _ETCTokenAddr) {
+    function ETHLocking(address _peaceRelayAddr, address _ETHTokenAddr) {
         totalSupply = 0;
         ETHRelay = PeaceRelay(_peaceRelayAddr);
-        ETCTokenAddr = _ETCTokenAddr;
+        ETHTokenAddr = _ETHTokenAddr;
         owner = msg.sender;
     }
     
@@ -56,14 +56,14 @@ contract ETHLocking {
         ETHRelay = PeaceRelay(_peaceRelayAddr);
     }
     
-    function changeETCTokenAddr(address _ETCTokenAddr) public onlyOwner {
-        ETCTokenAddr = _ETCTokenAddr;
+    function changeETHTokenAddr(address _ETHTokenAddr) public onlyOwner {
+        ETHTokenAddr = _ETHTokenAddr;
     }
     
-    function lock(address _ETCAddr) public payable returns (bool success) {
+    function lock(address _ETHAddr) public payable returns (bool success) {
         // Note: This will never throw, as there is a max amount of tokens on a chain
         totalSupply = totalSupply.add(msg.value);
-        emit Locked(msg.sender, _ETCAddr, msg.value);
+        emit Locked(msg.sender, _ETHAddr, msg.value);
         return true;
     }
     
@@ -82,7 +82,7 @@ contract ETHLocking {
             if (ETHRelay.checkTxProof(txValue, txBlockHash, txPath, txParentNodes)) {
                 Transaction memory tx = getTransactionDetails(txValue);
                 assert (getSig(tx.data) == BURN_FUNCTION_SIG);
-                assert (tx.to == ETCTokenAddr);
+                assert (tx.to == ETHTokenAddr);
 
                 totalSupply = totalSupply.sub(log.value);
                 rewarded[keccak256(txValue, bytes32(txBlockHash), txPath, txParentNodes)] = true;

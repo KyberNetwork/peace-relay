@@ -7,7 +7,7 @@ import "./RLP.sol";
 import "./Ownable.sol";
 
 
-contract ETCToken is ERC20, Ownable {
+contract ETHToken is ERC20, Ownable {
     using SafeMath for uint256;
     using RLP for RLP.RLPItem;
     using RLP for RLP.Iterator;
@@ -22,7 +22,7 @@ contract ETCToken is ERC20, Ownable {
         bytes data;
     }
     
-    struct ETCLockTxProof {
+    struct ETHLockTxProof {
         bytes value;
         bytes32 blockhash;
         bytes path;
@@ -42,22 +42,22 @@ contract ETCToken is ERC20, Ownable {
     mapping(address => mapping (address => uint)) allowed;
     mapping(bytes32 => bool) rewarded;
 
-    PeaceRelay public ETCRelay;
+    PeaceRelay public ETHRelay;
     address public ETHLockingAddr;
     
-    event Burn(address indexed from, address indexed etcAddr, uint indexed value);
+    event Burn(address indexed from, address indexed ethAddr, uint indexed value);
     event Mint(address indexed to, uint value);
     
-    function ETCToken(address peaceRelayAddr) {
+    function ETHToken(address peaceRelayAddr) {
         totalSupply = 0;
-        name = "ETCToken";        // Set the name for display purposes
-        symbol = "ETC";                       // Set the symbol for display purposes
+        name = "ETHToken";        // Set the name for display purposes
+        symbol = "ETH";                       // Set the symbol for display purposes
         decimals = 9;                        // Amount of decimals for display purposes
-        ETCRelay = PeaceRelay(peaceRelayAddr);
+        ETHRelay = PeaceRelay(peaceRelayAddr);
     }
     
     function changePeaceRelayAddr(address _peaceRelayAddr) onlyOwner public {
-        ETCRelay = PeaceRelay(_peaceRelayAddr);
+        ETHRelay = PeaceRelay(_peaceRelayAddr);
     }
     
     function changeETHLockingAddr(address _ETHLockingAddr) onlyOwner public {
@@ -65,7 +65,7 @@ contract ETCToken is ERC20, Ownable {
     }
     
     function mint(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public returns (bool) {
-        if (!rewarded[keccak256(value, bytes32(blockHash), path, parentNodes)] && ETCRelay.checkTxProof(value, blockHash, path, parentNodes)) {
+        if (!rewarded[keccak256(value, bytes32(blockHash), path, parentNodes)] && ETHRelay.checkTxProof(value, blockHash, path, parentNodes)) {
             Transaction memory tx = getTransactionDetails(value);
             bytes4 functionSig = getSignature(tx.data);
           
@@ -84,11 +84,11 @@ contract ETCToken is ERC20, Ownable {
         return false;
     }
     
-    function burn(uint256 _value, address etcAddr) public returns (bool) {
+    function burn(uint256 _value, address ethAddr) public returns (bool) {
         // safeSub already has throw, so no need to throw
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply = totalSupply.sub(_value);
-        emit Burn(msg.sender, etcAddr, _value);
+        emit Burn(msg.sender, ethAddr, _value);
         return true;
     }
     
@@ -97,7 +97,7 @@ contract ETCToken is ERC20, Ownable {
     }
     
     function checkProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public constant returns (bool) {
-        return ETCRelay.checkTxProof(value, blockHash, path, parentNodes);
+        return ETHRelay.checkTxProof(value, blockHash, path, parentNodes);
     }
     
     function transfer(address _to, uint _value) public returns (bool) {
