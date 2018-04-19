@@ -1,0 +1,76 @@
+body {
+  margin: 0 0 30px;
+  background-image: url('./assets/BG.jpg');
+  background-size: 100%;
+}
+
+.mainContainer {
+  background-color: rgba(0,0,0,0.5);
+  padding-bottom: 20px;
+  padding-top: 15px;
+}
+
+/* NAVBAR */
+.navbar {
+  background: rgb(250, 236, 225);
+
+}
+
+.navbarButton {
+  padding-right: 3%;
+  margin-right: 2%;
+}
+
+#rinkebyNetworkButton {
+  background-color: #f3ae49;
+  border-color: #f3ae49;
+}
+
+#kovanNetworkButton {
+  background-color: #9a0ead;
+  border-color: #9a0ead;
+}
+
+.wrongNetworkBar {
+  background-color: #ffdd57
+}
+
+.txStatus {
+  padding-top: 2%;
+}
+
+.txStatusTitle {
+  color: orange;
+}
+
+/* TOKEN FORM */
+.tokenForm {
+  color: white;
+}
+
+.conversionFormTitle {
+  color: aquamarine;
+  text-align: center;
+}
+
+.divider {
+  border-top: 1px solid rgba(255,255,220,1);
+}
+
+/* TOKEN BALANCE */
+.tokenBalanceTitle {
+  color: orange;
+}
+
+.tokenBalance {
+  margin-top: 3%;
+  color: white;
+}
+
+.pendingTxButton {
+  margin-bottom: 3%;
+}
+
+.txStatusModalCenter {
+  text-align: center;
+}
