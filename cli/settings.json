@@ -1,0 +1,40 @@
+
+  {
+    "kovan":{
+      "url": "https://kovan.infura.io",
+      "chainId": 42,
+      "peaceRelayAddress": "0x207a378458a04c370adae40f9678d59630ace8fc",
+      "etcLockingAddress": "0xc912255c5aa515a8fc178da9bb9f467eb02408bc",
+      "privateKey": "SIGNER PRIVATE KEY HERE",
+      "relayerPrivateKey": "RELAYER PRIVATE KEY HERE"
+    },
+
+    "ropsten":{
+      "url": "https://ropsten.infura.io",
+      "chainId": 3,
+      "peaceRelayAddress": "0xaa814956189f35345eacf7bf5aa9eb5a17631ec9",
+      "etcTokenAddress": "0xbe3b8284e8275d50649cb5016d34705aadc08e55",
+      "privateKey": "SIGNER PRIVATE KEY HERE",
+      "relayerPrivateKey": "RELAYER PRIVATE KEY HERE"
+    },
+
+    "rinkeby":{
+      "url":"https://rinkeby.infura.io",
+      "chainId": 4,
+      "peaceRelayAddress": "0x18ef75ca1c64cd684990903dc8cf878a5d2cbdea",
+      "etcTokenAddress": "0x4CC1885bEC2FABC9d1B21D0189727f44FEAFCbCf",
+      "privateKey": "SIGNER PRIVATE KEY HERE",
+      "relayerPrivateKey": "RELAYER PRIVATE KEY HERE"
+    },
+
+    "classic":{
+      "url": "",
+      "chainId": 61,
+      "peaceRelayAddress": ""
+    },
+    "mainnet": {
+      "url": "",
+      "chainId": 1,
+      "peaceRelayAddress": ""
+    }
+  }
