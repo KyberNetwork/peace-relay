@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./SafeMath.sol";
 import "./ERC20.sol";
@@ -48,11 +48,11 @@ contract ETHToken is ERC20, Ownable {
     event Burn(address indexed from, address indexed ethAddr, uint indexed value);
     event Mint(address indexed to, uint value);
     
-    function ETHToken(address peaceRelayAddr) {
+    constructor (address peaceRelayAddr) public {
         totalSupply = 0;
         name = "ETHToken";        // Set the name for display purposes
-        symbol = "ETH";                       // Set the symbol for display purposes
-        decimals = 9;                        // Amount of decimals for display purposes
+        symbol = "ETHT";           // Set the symbol for display purposes
+        decimals = 9;             // Amount of decimals for display purposes
         ETHRelay = PeaceRelay(peaceRelayAddr);
     }
     
@@ -92,49 +92,90 @@ contract ETHToken is ERC20, Ownable {
         return true;
     }
     
-    function checkIfRewarded(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public constant returns (bool) {
+    function checkIfRewarded(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public view returns (bool) {
         return rewarded[keccak256(value, bytes32(blockHash),path,parentNodes)];
     }
     
-    function checkProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public constant returns (bool) {
+    function checkProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public view returns (bool) {
         return ETHRelay.checkTxProof(value, blockHash, path, parentNodes);
     }
     
     function transfer(address _to, uint _value) public returns (bool) {
-        // safeSub already has throw, so no need to throw
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
-
-    function transferFrom(address _from, address _to, uint _value) public returns (bool) {
-        uint256 allowance = allowed[_from][msg.sender];
     
-        balances[_from] = balances[_from].sub(_value);
-        allowed[_from][msg.sender] = allowance.sub(_value);
-        balances[_to] = balances[_to].add(_value);
-        emit Transfer(_from, _to, _value);
-        return true;
+    /**
+     * * @dev Transfer tokens from one address to another
+     * @param _from address The address which you want to send tokens from
+     * @param _to address The address which you want to transfer to
+     * @param _value uint256 the amount of tokens to be transferred
+    **/
+    
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    require(_to != address(0));
+    require(_value <= balances[_from]);
+    require(_value <= allowed[_from][msg.sender]);
+
+    balances[_from] = balances[_from].sub(_value);
+    balances[_to] = balances[_to].add(_value);
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+    emit Transfer(_from, _to, _value);
+    return true;
     }
     
-    function balanceOf(address _owner) public constant returns (uint) {
+    function balanceOf(address _owner) public view returns (uint) {
         return balances[_owner];
     }
     
-    function approve(address _spender, uint _value) public returns (bool) {
+    function approve(address _spender, uint256 _value) public returns (bool) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
     
-    function allowance(address _owner, address _spender) public constant returns (uint) {
-        return allowed[_owner][_spender];
+     /**
+      * @dev Increase the amount of tokens that an owner allowed to a spender.
+      * approve should be called when allowed[_spender] == 0. To increment
+      * allowed value is better to use this function to avoid 2 calls (and wait until
+      * the first transaction is mined)
+      * From MonolithDAO Token.sol
+      * @param _spender The address which will spend the funds.
+      * @param _addedValue The amount of tokens to increase the allowance by.
+      */
+  
+    function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
+        allowed[msg.sender][_spender] = (allowed[msg.sender][_spender].add(_addedValue));
+        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        return true;
+    }
+
+    /**
+     * @dev Decrease the amount of tokens that an owner allowed to a spender.
+     * approve should be called when allowed[_spender] == 0. To decrement
+     * allowed value is better to use this function to avoid 2 calls (and wait until
+     * the first transaction is mined)
+     * From MonolithDAO Token.sol
+     * @param _spender The address which will spend the funds.
+     * @param _subtractedValue The amount of tokens to decrease the allowance by.
+    */
+    
+    function decreaseApproval(address _spender,uint _subtractedValue) public returns (bool) {
+        uint oldValue = allowed[msg.sender][_spender];
+        if (_subtractedValue > oldValue) {
+            allowed[msg.sender][_spender] = 0;
+        } else {
+            allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
+        }
+        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        return true;
     }
   
-    // Non-payable unnamed function prevents Ether from being sent accidentally
-	function () {}
-
+    function allowance(address _owner, address _spender) public view returns (uint) {
+        return allowed[_owner][_spender];
+    }
 
     // HELPER FUNCTIONS
     function getSignature(bytes b) public pure returns (bytes4) {
@@ -159,7 +200,7 @@ contract ETHToken is ERC20, Ownable {
     }
     
     //txValue is a value at the bottom of the transaction trie.
-    function getTransactionDetails(bytes txValue) constant internal returns (Transaction memory tx) {
+    function getTransactionDetails(bytes txValue) view internal returns (Transaction memory tx) {
         RLP.RLPItem[] memory list = txValue.toRLPItem().toList();
         tx.gasPrice = list[1].toUint();
         tx.gasLimit = list[2].toUint();
@@ -173,23 +214,4 @@ contract ETHToken is ERC20, Ownable {
         }
         return tx;
     }
-    
-    /*
-    //rlpTransaction is a value at the bottom of the transaction trie.
-    function testGetTransactionDetails(bytes rlpTransaction) constant returns (uint, uint, address, bytes) {
-        Transaction memory tx;
-        RLP.RLPItem[] memory list = rlpTransaction.toRLPItem().toList();
-        tx.gasPrice = list[1].toUint();
-        tx.gasLimit = list[2].toUint();
-        tx.to = address(list[3].toUint());
-        tx.value = list[4].toUint();
-        
-        //Ugly hard coding for now. Can only parse burn transactions.
-        tx.data = new bytes(36);
-        for (uint i = 0; i < 36; i++) {
-            tx.data[i] = rlpTransaction[rlpTransaction.length - 103 + i];
-        }
-        return (tx.gasPrice, tx.gasLimit, tx.to, tx.data);
-    }
-    */
 }
