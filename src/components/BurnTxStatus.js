@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Button } from 'reactstrap'
 import { newTxStatus, updateTxStatus, removeTxStatus } from '../actions/txStatusActions'
 import { MAX_ATTEMPTS, KOVAN_ETHERSCAN_LINK, InfuraRinkeby, InfuraKovan,  
-  ETCLocking, ETC_TOKEN_ADDRESS, EPs, PeaceRelayKovan, PEACE_RELAY_ADDRESS_KOVAN} from './Constants.js'
+  ETHLocking, ETH_TOKEN_ADDRESS, EPs, PeaceRelayKovan, PEACE_RELAY_ADDRESS_KOVAN} from './Constants.js'
 
 var helper  = require('../../utils/helpers.js');
 var BN = require('bn.js');
@@ -14,7 +14,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const mapStateToProps = (state) => ({
   web3: state.web3Status.web3,
   currAccount: state.web3Status.currAccount,
-  ETCToken: state.contracts.ETCToken,
+  ETHToken: state.contracts.ETHToken,
   PeaceRelayRinkeby: state.contracts.PeaceRelayRinkeby,
   })
   
@@ -94,11 +94,11 @@ class BurnTxStatus extends Component {
     self = this
 
     if(chain == 'rinkeby') {
-      data = this.props.ETCToken.burn.getData(this.props.web3.toWei(amount),recipient);
+      data = this.props.ETHToken.burn.getData(this.props.web3.toWei(amount),recipient);
       await this.props.web3.eth.sendTransaction({
         data: data, 
         from: this.props.currAccount,
-        to: ETC_TOKEN_ADDRESS, 
+        to: ETH_TOKEN_ADDRESS, 
         gas: 100000}, 
         
         async function(err, res) {
@@ -152,7 +152,7 @@ class BurnTxStatus extends Component {
   async unlock(id, txProof, receiptProof, blockHash, destChain) {
     var data, res
     if(destChain == 'kovan') {
-      data = ETCLocking.unlock.getData(txProof.value, blockHash, txProof.path, txProof.parentNodes,
+      data = ETHLocking.unlock.getData(txProof.value, blockHash, txProof.path, txProof.parentNodes,
       receiptProof.value, receiptProof.path, receiptProof.parentNodes)
       var unlockHash = await signing.unlock(data)
       this.updateTxStatus(id,"Waiting for <a href='" + KOVAN_ETHERSCAN_LINK + unlockHash + "' target='_blank'>transaction</a> to be mined."); 

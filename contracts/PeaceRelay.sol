@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./RLP.sol";
 import "./MerklePatriciaProof.sol";
@@ -85,7 +85,7 @@ contract PeaceRelay {
 
   function parseBlockHeader(bytes rlpHeader) view internal returns (BlockHeader) {
     BlockHeader memory header;
-    var it = rlpHeader.toRLPItem().iterator();
+    RLP.Iterator memory it = rlpHeader.toRLPItem().iterator();
 
     uint idx;
     while (it.hasNext()) {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Input } from 'reactstrap'
-import { ETCToken } from './Constants.js';
+import { ETHToken } from './Constants.js';
 
 export default class Balances extends Component {
 	constructor(props) {
@@ -25,7 +25,7 @@ export default class Balances extends Component {
 		if (queryNetwork == 'kovan') {
 			console.log('balanceOf() method not implemented in Smart Contract by design.')
 		} else {
-			let balance = ETCToken.balanceOf(this.state.rinkebyAddress)
+			let balance = ETHToken.balanceOf(this.state.rinkebyAddress)
 			balance = this.props.web3.fromWei(balance, 'ether').toNumber()
 			if (balance != this.state.rinkebyBalance) {
 				this.setState({rinkebyBalance: balance})
@@ -40,9 +40,9 @@ export default class Balances extends Component {
 	render() {
 		return (
 			<div className="tokenBalance">
-				<h4 className="tokenBalanceTitle">ETC Tokens in Rinkeby</h4>
+				<h4 className="tokenBalanceTitle">ETH Tokens in Rinkeby</h4>
 				<hr className="divider"/>
-				<p>{this.state.rinkebyBalance} ETC</p>
+				<p>{this.state.rinkebyBalance} ETH</p>
 	            <Input type='text' name="rinkebyAddress" placeholder="Wallet Address" value={this.state.rinkebyAddress} onChange={this.handleChange}/>
 	          	<Button color="info" onClick={() => this.queryBalance('rinkeby')} block>Query</Button>
 			</div>

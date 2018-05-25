@@ -18,23 +18,23 @@ export const InfuraRinkeby = new Web3(new Web3.providers.HttpProvider("https://r
 export const InfuraKovan = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/GuujZSIzbY0azOouyBPX"));
 
 export const PeaceRelayABI = require('../../build/contracts/PeaceRelay.json').abi;
-export const ETCTokenABI = require('../../build/contracts/ETCToken.json').abi;
-export const ETCLockingABI = require('../../build/contracts/ETCLocking.json').abi;
+export const ETHTokenABI = require('../../build/contracts/ETHToken.json').abi;
+export const ETHLockingABI = require('../../build/contracts/ETHLocking.json').abi;
  
 export const PEACE_RELAY_ADDRESS_RINKEBY = settings['rinkeby'].peaceRelayAddress
 export const PEACE_RELAY_ADDRESS_KOVAN = settings['kovan'].peaceRelayAddress
-export const ETC_TOKEN_ADDRESS = settings['rinkeby'].etcTokenAddress
-export const ETC_LOCKING_ADDRESS = settings['kovan'].etcLockingAddress
+export const ETH_TOKEN_ADDRESS = settings['rinkeby'].ethTokenAddress
+export const ETH_LOCKING_ADDRESS = settings['kovan'].ethLockingAddress
 
 var PeaceRelayRinkebyContract = InfuraRinkeby.eth.contract(PeaceRelayABI);
 var PeaceRelayKovanContract = InfuraKovan.eth.contract(PeaceRelayABI);
-var ETCTokenContract = InfuraRinkeby.eth.contract(ETCTokenABI);
-var ETCLockingContract = InfuraKovan.eth.contract(ETCLockingABI);
+var ETHTokenContract = InfuraRinkeby.eth.contract(ETHTokenABI);
+var ETHLockingContract = InfuraKovan.eth.contract(ETHLockingABI);
 
 export var PeaceRelayRinkeby = PeaceRelayRinkebyContract.at(PEACE_RELAY_ADDRESS_RINKEBY)
 export var PeaceRelayKovan = PeaceRelayKovanContract.at(PEACE_RELAY_ADDRESS_KOVAN)
-export var ETCToken = ETCTokenContract.at(ETC_TOKEN_ADDRESS)
-export var ETCLocking = ETCLockingContract.at(ETC_LOCKING_ADDRESS)
+export var ETHToken = ETHTokenContract.at(ETH_TOKEN_ADDRESS)
+export var ETHLocking = ETHLockingContract.at(ETH_LOCKING_ADDRESS)
 
 const EpRinkeby = new EP(new Web3.providers.HttpProvider("https://rinkeby.infura.io/GuujZSIzbY0azOouyBPX"));
 const EpKovan = new EP(new Web3.providers.HttpProvider("https://kovan.infura.io/GuujZSIzbY0azOouyBPX"));
