@@ -41,7 +41,7 @@ async function helper(data, chain, contractAddr, amount) {
 
 async function lock(data, amount) {
   try {
-    var hash = await helper(data, 'kovan', settings['kovan'].etcLockingAddress, amount);
+    var hash = await helper(data, 'kovan', settings['kovan'].ethLockingAddress, amount);
     return hash;
   } catch(err) {
     throw err;
@@ -50,7 +50,7 @@ async function lock(data, amount) {
 
 async function unlock(data) {
   try {
-    var hash = await helper(data, 'kovan', settings['kovan'].etcLockingAddress, 0);
+    var hash = await helper(data, 'kovan', settings['kovan'].ethLockingAddress, 0);
     return hash;
   } catch(err) {
     throw err;
@@ -59,7 +59,7 @@ async function unlock(data) {
 
 async function burn(data, amount) {
   try {
-    var hash = await helper(data, 'rinkeby', settings['rinkeby'].etcTokenAddress, amount);
+    var hash = await helper(data, 'rinkeby', settings['rinkeby'].ethTokenAddress, amount);
     return hash;
   } catch(err) {
     throw err;
@@ -68,7 +68,7 @@ async function burn(data, amount) {
 
 async function mint(data) {
   try {
-    var hash = await helper(data, 'rinkeby', settings['rinkeby'].etcTokenAddress, 0);
+    var hash = await helper(data, 'rinkeby', settings['rinkeby'].ethTokenAddress, 0);
     return hash;
   } catch(err) {
     throw err;
@@ -137,24 +137,4 @@ async function getTransactionReceipt(txHash, chain) {
   return result.body.result;
 }
 
-// const Ropsten = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"));
-// const Kovan = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io"));
-
-// // TODO : Fix this(require undefined, because this is web-page)
-// const PeacerelayABI = require('../../build/contracts/PeaceRelay.json').abi;
-// const ETCTokenABI = require('../../build/contracts/ETCToken.json').abi;
-// const ETCLockingABI = require('../../build/contracts/ETCLocking.json').abi;
-
-// var PeaceRelayRopsten = new Ropsten.eth.Contract(PeacerelayABI);
-// var PeaceRelayKovan = new Kovan.eth.Contract(PeacerelayABI);
-// var ETCToken = new Ropsten.eth.Contract(ETCTokenABI);
-// var ETCLocking = new Kovan.eth.Contract(ETCLockingABI);
-
-// PeaceRelayRopsten.options.address = settings['ropsten'].peaceRelayAddress;
-// PeaceRelayKovan.options.address = settings['kovan'].peaceRelayAddress;
-// ETCToken.options.address = settings['ropsten'].etcTokenAddress;
-// ETCLocking.options.address = settings['kovan'].etcLockingAddress;
-
-// module.exports = {ethCall, getBlockInfo, getTransactionReceipt, lock, unlock, mint, burn, PeaceRelayKovan,
-//                   PeaceRelayRopsten, ETCToken, ETCLocking, EP};
 module.exports = {ethCall, mint, unlock};

@@ -1,11 +1,11 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
 import "./PeaceRelay.sol";
 import "./RLP.sol";
 import "./Ownable.sol";
 
-contract ETHLocking {
+contract ETHLocking is Ownable {
     using SafeMath for uint256;
     using RLP for RLP.RLPItem;
     using RLP for RLP.Iterator;
@@ -21,12 +21,6 @@ contract ETHLocking {
     mapping(bytes32 => bool) rewarded;
     PeaceRelay public ETHRelay;
     address public ETHTokenAddr;
-    
-    modifier onlyOwner() {
-        if (owner == msg.sender) {
-            _;
-        }
-    }
     
     struct Transaction {
         uint gasPrice;
@@ -45,10 +39,10 @@ contract ETHLocking {
     event Locked(address indexed from, address indexed ethAddr, uint value);
     event Unlocked(address indexed to, uint value);
     
-    function ETHLocking(address _peaceRelayAddr, address _ETHTokenAddr) {
+    constructor (address _ETHTokenAddr, address _peaceRelayAddr) public {
         totalSupply = 0;
-        ETHRelay = PeaceRelay(_peaceRelayAddr);
         ETHTokenAddr = _ETHTokenAddr;
+        ETHRelay = PeaceRelay(_peaceRelayAddr);
         owner = msg.sender;
     }
     
@@ -88,10 +82,10 @@ contract ETHLocking {
                 rewarded[keccak256(txValue, bytes32(txBlockHash), txPath, txParentNodes)] = true;
                 rewarded[keccak256(recValue, bytes32(txBlockHash), recPath, recParentNodes)] = true;
                 log.ETHAddr.transfer(log.value);
-                assert(totalSupply == this.balance);
                 emit Unlocked(log.ETHAddr, log.value);
                 return true;
             }
+            
         return false;
         }
     }
@@ -119,16 +113,6 @@ contract ETHLocking {
         l.value = logValue[3].toUint();
     }
 
-    // rlpTransaction is a value at the bottom of the transaction trie.
-    function testGetReceiptDetails(bytes rlpReceipt) constant public returns (address, address, uint) {
-        RLP.RLPItem[] memory receipt = rlpReceipt.toRLPItem().toList();
-        RLP.RLPItem[] memory logs = receipt[3].toList();
-        RLP.RLPItem[] memory log = logs[0].toList();
-        RLP.RLPItem[] memory logValue = log[1].toList();
-        return (address(logValue[1].toUint()), address(logValue[2].toUint()), logValue[3].toUint());
-    }
-
-
   // rlpTransaction is a value at the bottom of the transaction trie.
   function getTransactionDetails(bytes rlpTransaction) constant internal returns (Transaction memory tx) {
     RLP.RLPItem[] memory list = rlpTransaction.toRLPItem().toList();
@@ -141,21 +125,5 @@ contract ETHLocking {
       tx.data[i] = rlpTransaction[rlpTransaction.length - 135 + i];
     }
     return tx;
-  }
-
-  // rlpTransaction is a value at the bottom of the transaction trie.
-  function testGetTransactionDetails(bytes rlpTransaction) constant public returns (uint, uint, address, bytes) {
-    Transaction memory tx;
-    RLP.RLPItem[] memory list = rlpTransaction.toRLPItem().toList();
-    tx.gasPrice = list[1].toUint();
-    tx.gasLimit = list[2].toUint();
-    tx.to = address(list[3].toUint());
-    
-    //Ugly hard coding for now. Can only parse burn transactions.
-    tx.data = new bytes(68);
-    for (uint i = 0; i < 68; i++) {
-      tx.data[i] = rlpTransaction[rlpTransaction.length - 135 + i];
-    }
-    return (tx.gasPrice, tx.gasLimit, tx.to, tx.data);
   }
 }

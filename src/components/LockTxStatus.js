@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Button } from 'reactstrap'
 import { newTxStatus, updateTxStatus, removeTxStatus } from '../actions/txStatusActions'
-import { MAX_ATTEMPTS, RINKEBY_ETHERSCAN_LINK, InfuraRinkeby, InfuraKovan, ETCToken,
-  EPs, PeaceRelayRinkeby, ETC_LOCKING_ADDRESS, PEACE_RELAY_ADDRESS_RINKEBY } from './Constants.js'
+import { MAX_ATTEMPTS, RINKEBY_ETHERSCAN_LINK, InfuraRinkeby, InfuraKovan, ETHToken,
+  EPs, PeaceRelayRinkeby, ETH_LOCKING_ADDRESS, PEACE_RELAY_ADDRESS_RINKEBY } from './Constants.js'
 
 var helper  = require('../../utils/helpers.js');
 var BN = require('bn.js');
@@ -14,7 +14,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const mapStateToProps = (state) => ({
   web3: state.web3Status.web3,
   currAccount: state.web3Status.currAccount,
-  ETCLocking: state.contracts.ETCLocking,
+  ETHLocking: state.contracts.ETHLocking,
   PeaceRelayKovan: state.contracts.PeaceRelayKovan,
   })
 
@@ -48,8 +48,8 @@ class LockTxStatus extends Component {
     let id = new Date().getTime()
     /*
     To use this code when Infura allows event listening
-    ETCTokenMintEvent = ETCToken.Mint({to: this.props.recipient})
-    ETCTokenMintEvent.watch(function(err,res){
+    ETHTokenMintEvent = ETHToken.Mint({to: this.props.recipient})
+    ETHTokenMintEvent.watch(function(err,res){
       if(!err) {
         console.log(res)
         console.log("Tokens mined! =)")
@@ -106,11 +106,11 @@ class LockTxStatus extends Component {
     self = this
 
     if(chain == 'kovan') {
-      data = this.props.ETCLocking.lock.getData(recipient);
+      data = this.props.ETHLocking.lock.getData(recipient);
       await this.props.web3.eth.sendTransaction({
         data: data, 
         from: this.props.currAccount, 
-        to: ETC_LOCKING_ADDRESS,
+        to: ETH_LOCKING_ADDRESS,
         value: this.props.web3.toWei(amount),
         gas: 100000}, 
         
@@ -170,10 +170,10 @@ class LockTxStatus extends Component {
       console.log('Path:' + txProof.path)
       console.log('Nodes:' + txProof.parentNodes)
       
-      data = ETCToken.mint.getData(txProof.value, blockHash, 
+      data = ETHToken.mint.getData(txProof.value, blockHash, 
                                     txProof.path, txProof.parentNodes)
       var mintHash = await signing.mint(data)
-      this.updateTxStatus(id,"ETC Tokens will be credited after <a href='" + RINKEBY_ETHERSCAN_LINK + mintHash + "' target='_blank'>this transaction</a> has been mined")
+      this.updateTxStatus(id,"ETH Tokens will be credited after <a href='" + RINKEBY_ETHERSCAN_LINK + mintHash + "' target='_blank'>this transaction</a> has been mined")
     } else {
       this.updateTxStatus(id,"Wrong destination network.")
     }
