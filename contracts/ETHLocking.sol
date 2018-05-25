@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
 import "./PeaceRelay.sol";
@@ -39,10 +39,10 @@ contract ETHLocking is Ownable {
     event Locked(address indexed from, address indexed ethAddr, uint value);
     event Unlocked(address indexed to, uint value);
     
-    constructor (address _peaceRelayAddr, address _ETHTokenAddr) public {
+    constructor (address _ETHTokenAddr, address _peaceRelayAddr) public {
         totalSupply = 0;
-        ETHRelay = PeaceRelay(_peaceRelayAddr);
         ETHTokenAddr = _ETHTokenAddr;
+        ETHRelay = PeaceRelay(_peaceRelayAddr);
         owner = msg.sender;
     }
     
