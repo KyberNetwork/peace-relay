@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
 import "./ERC20.sol";
@@ -100,11 +100,23 @@ contract ETHToken is ERC20, Ownable {
         return ETHRelay.checkTxProof(value, blockHash, path, parentNodes);
     }
     
+    function totalSupply() public view returns (uint256) {
+        return totalSupply;
+    }
+    
+    function balanceOf(address _owner) public view returns (uint) {
+        return balances[_owner];
+    }
+    
     function transfer(address _to, uint _value) public returns (bool) {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
         return true;
+    }
+    
+    function allowance(address _owner, address _spender) public view returns (uint) {
+        return allowed[_owner][_spender];
     }
     
     /**
@@ -124,10 +136,6 @@ contract ETHToken is ERC20, Ownable {
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     emit Transfer(_from, _to, _value);
     return true;
-    }
-    
-    function balanceOf(address _owner) public view returns (uint) {
-        return balances[_owner];
     }
     
     function approve(address _spender, uint256 _value) public returns (bool) {
@@ -171,10 +179,6 @@ contract ETHToken is ERC20, Ownable {
         }
         emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
-    }
-  
-    function allowance(address _owner, address _spender) public view returns (uint) {
-        return allowed[_owner][_spender];
     }
 
     // HELPER FUNCTIONS
