@@ -2,7 +2,7 @@ const buffer = require("buffer");
 const EthereumTx = require("ethereumjs-tx");
 const secp256k1 = require("secp256k1/elliptic");
 const keccak256 = require("js-sha3").keccak256;
-const request = require("superagent");
+const request = require("request-promise-native");
 
 async function submitBlock(data, chain) {
   try {
@@ -52,17 +52,13 @@ function privateToAddress(privateKey){
 }
 
 async function getNonce(address, chainurl){
-  result = await request
-  .post(chainurl)
-  .send({ jsonrpc: "2.0", method: "eth_getTransactionCount", params: [address, "pending"], id:1 })
-  return result.body.result;
+  result = await request.post(chainurl, {json: { jsonrpc: "2.0", method: "eth_getTransactionCount", params: [address, "pending"], id:1 }});
+  return result.result;
 }
 
 async function submitTx(stx, chainurl){
-  result = await request
-  .post(chainurl)
-  .send({ jsonrpc :"2.0", method :"eth_sendRawTransaction", params :[stx],"id":1})
-  return result.body;
+  result = await request.post(chainurl, {json: { jsonrpc :"2.0", method :"eth_sendRawTransaction", params :[stx],"id":1}})
+  return result;
 }
 
 module.exports = submitBlock
