@@ -1,5 +1,5 @@
 const Web3 = require('web3')
-const request = require('superagent')
+const request = require('request-promise-native');
 const rlp = require('rlp')
 const EthereumBlock = require('ethereumjs-block/from-rpc')
 const commandLineArgs = require('command-line-args')
@@ -18,16 +18,15 @@ const optionDefinitions = [
 
 const options = commandLineArgs(optionDefinitions)
 
-const from = settings[options.from].url;
+const from = settings[options.from];
 
 const to = settings[options.to];
 to.privateKey = settings[options.to].relayerPrivateKey;
 
-const From = new Web3(new Web3.providers.HttpProvider(from));
+const From = new Web3(new Web3.providers.HttpProvider(from.url));
 const To = new Web3(new Web3.providers.HttpProvider(to.url));
 
-const PeaceRelayTo = new To.eth.Contract(peacerelayABI);
-PeaceRelayTo.options.address = to.peaceRelayAddress;
+const PeaceRelayTo = new To.eth.Contract(peacerelayABI, to.peaceRelayAddress);
 
 var currentBlockNumber = options.start;
 console.log('startingBlockNumber:' + currentBlockNumber);
@@ -42,10 +41,8 @@ postFrom();
  */
 async function postFrom() {
   try {
-    result = await request
-      .post(from)
-      .send({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 83 })
-    var highestBlockNumber = parseInt(result.body.result, 16);
+    result = await request.post(from.url, {json: { jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }});
+    var highestBlockNumber = parseInt(result.result, 16);
     await catchUp(highestBlockNumber);
   } catch (e) {
     console.error(e);
@@ -80,8 +77,7 @@ async function relay(num) {
     if (block === null) {
       return await relay(num);
     }
-    var BN = From.utils.BN;
-    data = await PeaceRelayTo.methods.submitBlock(new BN(block.hash).toString(), '0x' + rlp.encode(getRawHeader(block)).toString('hex')).encodeABI();
+    data = await PeaceRelayTo.methods.submitBlock(block.hash, '0x' + rlp.encode(getRawHeader(block)).toString('hex')).encodeABI();
     hash = await submitBlock(data, to);
     return hash;
   } catch (e) {
